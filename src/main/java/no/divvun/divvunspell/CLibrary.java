@@ -23,7 +23,9 @@ class CLibrary {
     //    fun divvun_thfst_chunked_box_speller_suggest_with_config(speller: Pointer, word: SlicePointer.ByValue, config: CSpellerConfig, error: ErrorCallback): SlicePointer
     public static native NativeLong divvun_vec_suggestion_len(SlicePointer.ByValue suggestions, ErrorCallback error);
 
-    public static native Pointer divvun_vec_suggestion_get_value(SlicePointer.ByValue suggestions, NativeLong index, ErrorCallback error);
+    public static native SlicePointer.ByValue divvun_vec_suggestion_get_value(SlicePointer.ByValue suggestions, NativeLong index, ErrorCallback error);
+
+    public static native void cffi_string_free(SlicePointer.ByValue ptr);
 
     static {
         Native.register(CLibrary.class, "divvunspell");

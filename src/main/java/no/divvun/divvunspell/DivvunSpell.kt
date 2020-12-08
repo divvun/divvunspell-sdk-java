@@ -38,16 +38,12 @@ class ThfstChunkedBoxSpeller internal constructor(private val handle: Pointer) {
         val slice = word.withSlice {
             CLibrary.divvun_thfst_chunked_box_speller_suggest(handle, it, errorCallback)
         }
-        println("MMM " + slice)
         assertNoError()
         return suggest(slice)
     }
 
     @Throws(DivvunSpellException::class)
     fun suggest(word: String, config: SpellerConfig): List<String> {
-//        val cConfig = se.brendan.divvunspell.CSpellerConfig.from(config)
-//        val slice = se.brendan.divvunspell.CLibrary.divvun_thfst_chunked_box_speller_suggest_with_config(handle, word, cConfig, se.brendan.divvunspell.errorCallback)
-
         val slice = word.withSlice {
             CLibrary.divvun_thfst_chunked_box_speller_suggest(handle, it, errorCallback)
         }
@@ -65,7 +61,9 @@ class ThfstChunkedBoxSpeller internal constructor(private val handle: Pointer) {
         for (i in 0L until len.toLong()) {
             val value = CLibrary.divvun_vec_suggestion_get_value(slice, NativeLong(i, true), errorCallback)
             assertNoError()
-            out.add(value.getString(0, "UTF-8"))
+            val str = value.decode() ?: continue
+            CLibrary.cffi_string_free(value)
+            out.add(str)
         }
 
         return out
