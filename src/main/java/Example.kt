@@ -1,6 +1,6 @@
-//import no.divvun.divvunspell.ThfstChunkedBoxSpellerArchive
+//import no.divvun.divvunspell.SpellerArchive
 //
 //fun main() {
-//    val ar = ThfstChunkedBoxSpellerArchive.open("/Users/brendan/Downloads/se.bhfst")
+//    val ar = SpellerArchive.open("/Library/Services/se.bundle/Contents/Resources/se.bhfst")
 //    println(ar.speller().suggest("same"))
 //}
