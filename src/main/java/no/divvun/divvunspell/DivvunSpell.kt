@@ -83,7 +83,6 @@ class SpellerArchive private constructor(private val handle: TraitObjectPointer.
     }
 
     fun speller(): Speller {
-        println(handle)
         val spellerHandle = CLibrary.divvun_speller_archive_speller(handle, errorCallback)
         assertNoError()
         return Speller(spellerHandle)
