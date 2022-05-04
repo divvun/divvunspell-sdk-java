@@ -20,7 +20,7 @@ data class SpellerConfig(
 
 class DivvunSpellException(message: String?) : Exception(message)
 
-class Speller internal constructor(private val handle: TraitObjectPointer) {
+class Speller internal constructor(private val handle: TraitObjectPointer.ByValue) {
     @Throws(DivvunSpellException::class)
     fun isCorrect(word: String): Boolean {
         if (word.isEmpty()) {
@@ -70,7 +70,7 @@ class Speller internal constructor(private val handle: TraitObjectPointer) {
     }
 }
 
-class SpellerArchive private constructor(private val handle: TraitObjectPointer) {
+class SpellerArchive private constructor(private val handle: TraitObjectPointer.ByValue) {
     companion object {
         @Throws(DivvunSpellException::class)
         fun open(path: String): SpellerArchive {
@@ -83,6 +83,7 @@ class SpellerArchive private constructor(private val handle: TraitObjectPointer)
     }
 
     fun speller(): Speller {
+        println(handle)
         val spellerHandle = CLibrary.divvun_speller_archive_speller(handle, errorCallback)
         assertNoError()
         return Speller(spellerHandle)
@@ -115,4 +116,8 @@ fun <T> String.withStringPointer(callback: (StringPointer.ByValue) -> T): T {
 fun <T> String.withPathPointer(callback: (PathPointer.ByValue) -> T): T {
     val s = PathPointer.ByValue.encode(this)
     return callback(s)
+}
+
+fun enableDivvunSpellLogging() {
+    CLibrary.divvun_enable_logging()
 }
