@@ -27,6 +27,7 @@ class Speller internal constructor(private val handle: TraitObjectPointer.ByValu
             return false
         }
         val res = word.withStringPointer {
+            println("$handle $it - $errorCallback")
             CLibrary.divvun_speller_is_correct(handle, it, errorCallback)
         }
         assertNoError()
@@ -36,6 +37,7 @@ class Speller internal constructor(private val handle: TraitObjectPointer.ByValu
     @Throws(DivvunSpellException::class)
     fun suggest(word: String): List<String> {
         val slice = word.withStringPointer {
+            println("$handle $it - $errorCallback")
             CLibrary.divvun_speller_suggest(handle, it, errorCallback)
         }
         assertNoError()
@@ -45,6 +47,7 @@ class Speller internal constructor(private val handle: TraitObjectPointer.ByValu
     @Throws(DivvunSpellException::class)
     fun suggest(word: String, config: SpellerConfig): List<String> {
         val slice = word.withStringPointer {
+            println("$handle $it - $errorCallback")
             CLibrary.divvun_speller_suggest(handle, it, errorCallback)
         }
         assertNoError()
@@ -53,15 +56,18 @@ class Speller internal constructor(private val handle: TraitObjectPointer.ByValu
 
     @Throws(DivvunSpellException::class)
     private fun suggest(slice: SlicePointer.ByValue): List<String> {
+        println("$handle $slice - $errorCallback")
         val len = CLibrary.divvun_vec_suggestion_len(slice, errorCallback)
         assertNoError()
 
         val out = mutableListOf<String>()
 
         for (i in 0L until len.toLong()) {
-            val value = CLibrary.divvun_vec_suggestion_get_value(slice, NativeLong(i, true), errorCallback)
+            println("$handle $slice - $errorCallback")
+            val value = CLibrary.divvun_vec_suggestion_get_value(slice, NativeLong(i), errorCallback)
             assertNoError()
             val str = value.decode() ?: continue
+            println("$value")
             CLibrary.cffi_string_free(value)
             out.add(str)
         }
@@ -74,7 +80,9 @@ class SpellerArchive private constructor(private val handle: TraitObjectPointer.
     companion object {
         @Throws(DivvunSpellException::class)
         fun open(path: String): SpellerArchive {
+            println(path)
             val handle = path.withPathPointer {
+                println("$it - $errorCallback")
                 CLibrary.divvun_speller_archive_open(it, errorCallback)
             }
             assertNoError()
@@ -83,6 +91,7 @@ class SpellerArchive private constructor(private val handle: TraitObjectPointer.
     }
 
     fun speller(): Speller {
+        println("$handle - $errorCallback")
         val spellerHandle = CLibrary.divvun_speller_archive_speller(handle, errorCallback)
         assertNoError()
         return Speller(spellerHandle)
